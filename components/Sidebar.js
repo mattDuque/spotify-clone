@@ -28,7 +28,7 @@ function Sidebar() {
 
     return (
         <div className='text-gray-500 p-5 border-r border-gray-900 scrollbar-hide
-        text-xs lg:text-sm sm:max-w-[12rem] lg:min-w-[13rem] hidden md:inline-flex
+        text-xs lg:text-sm sm:max-w-[12rem] lg:min-w-[13rem] hidden md:inline-flex pb-36
         '>
             <div className='space-y-4'>
                 <img className='mb-8 h-11' src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_White.png" alt="" />

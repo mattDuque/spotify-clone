@@ -15,8 +15,8 @@ export default function Home() {
       <main className='flex'>
         <Sidebar />
         <Center />
-        <Player />
       </main>
+      <Player />
     </div>
   )
 }

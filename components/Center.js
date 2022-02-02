@@ -6,7 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { playlistIdState, playlistState } from '../atoms/spotifyAtoms'
 import { millisConverter } from '../lib/utils'
 import useSpotify from '../hooks/useSpotify'
-import Songs from './Songs'
+import Song from './Song'
 
 function Center() {
 
@@ -52,10 +52,10 @@ function Center() {
     }
 
     return (
-        <div className='flex-grow h-screen overflow-y-scroll scrollbar-hide'>
+        <div className='flex-grow h-screen overflow-y-scroll scrollbar-hide bg-[#121212]'>
             <header className='absolute top-5 right-8'>
                 <div className='flex items-center bg-black space-x-2 font-semibold text-white
-                    opacity-90 hover:opacity-80 cursor-pointer rounded-full p-0.5 pr-2'
+                    opacity-90 hover:bg-[#282828] cursor-pointer rounded-full p-0.5 pr-2'
                     onClick={signOut}>
                     <img className='rounded-full w-7'
                         src={session?.user.image} alt="" />
@@ -71,22 +71,23 @@ function Center() {
                 <div>
                     <p className='font-semibold'>PLAYLIST</p>
                     <h1 className='text-4xl md:text-6xl xl:text-8xl font-bold'>{playlist?.name}</h1>
-                    <p className='text-gray-500 mt-3'>{playlist?.description}</p>
-                    <p className='text-gray-500'>
-                        <a
-                            className='text-white font-semibold no-underline hover:underline;'
-                            href={playlist?.owner.external_urls.spotify}
-                        >
+                    <span className='text-[#c0c7ca]'>
+                        <p className='mt-3'>{playlist?.description}</p>
+                        <p>
+                            <a className='text-white font-semibold hover:underline'
+                                href={playlist?.owner.external_urls.spotify}>
                             {playlist?.owner.display_name}
-                        </a> •
-                        <span> {playlist?.followers.total} likes</span> •
-                        <span> {playlist?.tracks.total} songs, {playlistLenght}</span>
-                        <span> </span>
-                    </p>
+                            </a> • {playlist?.followers.total} likes • {playlist?.tracks.total} songs, {playlistLenght}
+                        </p>
+                    </span>
                 </div>
             </section>
             <section>
-                <Songs />
+                <div className='px-8 flex flex-col pb-28 text-white'>
+                    {playlist?.tracks.items.map((item, i) => (
+                        <Song key={item.track.id} item={item} order={i} />
+                    ))}
+                </div>
             </section>
         </div>
     )
