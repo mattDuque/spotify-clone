@@ -17,6 +17,9 @@ function Login({ providers }) {
                     </button>
                 </div>
             ))}
+            <p className='text-gray-500 fixed bottom-2'>
+                NOTE: this is just a demo, it is not real spotify and you need to have a device active for this app to work
+            </p>
         </div>
     )
 }

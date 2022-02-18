@@ -13,6 +13,8 @@ import useSpotify from '../hooks/useSpotify'
 import useSongInfo from '../hooks/useSongInfo'
 import Link from 'next/link'
 import { debounce } from 'lodash'
+import { handleError } from '../lib/utils'
+import { resolveHref } from 'next/dist/shared/lib/router/router'
 
 function Player() {
 
@@ -25,13 +27,13 @@ function Player() {
 
     const playSong = () => {
         spotifyApi.play()
-            .catch(err => alert(err.body.error.message))
+            .catch(err => handleError(err.body.error.message))
         setIsPlaying(true)
     }
 
     const pauseSong = () => {
         spotifyApi.pause()
-            .catch(err => alert(err.body.error.message))
+            .catch(err => handleError(err.body.error.message))
         setIsPlaying(false)
     }
 
@@ -41,19 +43,28 @@ function Player() {
 
     useEffect(() => {
         if (spotifyApi.getAccessToken() && !currentTrackId) {
-            spotifyApi.getMyCurrentPlayingTrack().then(data => setCurrentTrackId(data.body?.item.id))
-            spotifyApi.getMyCurrentPlaybackState().then(data => setIsPlaying(data.body?.is_playing))
+            spotifyApi.getMyCurrentPlayingTrack().then(data => setCurrentTrackId(data.body?.item.id)).catch(err => handleError(err.body.error.message))
+            spotifyApi.getMyCurrentPlaybackState().then(data => setIsPlaying(data.body?.is_playing)).catch(err => handleError(err.body.error.message))
         }
     }, [currentTrackIdState, spotifyApi, session])
 
     const volumeDebounce = useCallback(
         debounce((volume) =>
-            spotifyApi.setVolume(volume), 500), [])
+            spotifyApi.setVolume(volume).catch(err => handleError(err.body.error.message))
+            , 500), [])
+
+    async function skipSong() {
+        await spotifyApi.skipToNext()
+        spotifyApi.getMyCurrentPlayingTrack().
+            then(data => {
+                setCurrentTrackId(data.body.item.id)
+            }).catch(err => handleError(err.body.error.message))
+    }
 
     return (
         <div className='sticky bottom-0'>
             {songInfo && <div className='h-24 bg-[#181818] grid grid-cols-3 px-2 md:px-3'>
-                <div className='flex items-center '>
+                <div className='flex items-center' key={currentTrackId}>
                     <img
                         className='w-14 ml-1'
                         src={songInfo?.album.images[0].url}
@@ -73,25 +84,22 @@ function Player() {
                 <div className='text-[#b3b3b3] m-auto'>
                     <div className='space-x-4'>
                         <ShuffleIcon
-                            onClick={() => spotifyApi.setShuffle('true')}
+                            onClick={() => spotifyApi.setShuffle('true').catch(err => handleError(err.body.error.message))}
                             className='text-xl hover:text-white' />
                         <SkipPreviousIcon
-                            onClick={() => spotifyApi.skipToPrevious()}
+                            onClick={() => spotifyApi.skipToPrevious().catch(err => handleError(err.body.error.message))}
                             className='hover:text-white' />
                         {isPlaying
                             ? <PauseCircleIcon onClick={pauseSong} className='text-5xl text-white hover:scale-105' />
                             : <PlayCircleIcon onClick={playSong} className='text-5xl text-white hover:scale-105' />
                         }
                         <SkipNextIcon
-                            onClick={() => spotifyApi.skipToNext()}
+                            onClick={skipSong}
                             className='hover:text-white ' />
                         <RepeatIcon
-                            onClick={() => spotifyApi.setRepeat}
+                            onClick={() => spotifyApi.setRepeat().catch(err => handleError(err.body.error.message))}
                             className='text-xl hover:text-white' />
                     </div>
-                    <button onClick={() => _().debounce(logOk(), 1000)}>
-                        sdfasd
-                    </button>
                 </div>
                 <div className='flex items-center text-white ml-auto mr-3 space-x-1 '>
                     <VolumeUpIcon className='text-xl' />

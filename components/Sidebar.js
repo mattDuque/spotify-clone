@@ -9,6 +9,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { useRecoilState } from 'recoil'
 import { playlistIdState } from '../atoms/spotifyAtoms'
 import useSpotify from '../hooks/useSpotify'
+import { handleError } from '../lib/utils'
 
 function Sidebar() {
 
@@ -21,7 +22,7 @@ function Sidebar() {
         if (spotifyApi.getAccessToken()) {
             spotifyApi.getUserPlaylists().then(data => {
                 setPlaylists(data.body.items)
-            }).catch(e => { alert(e); console.log(e) })
+            }).catch(err => handleError(err.body.error.message))
         }
 
     }, [session, spotifyApi])

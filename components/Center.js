@@ -39,7 +39,7 @@ function Center() {
                     runtime.push(i.track.duration_ms)
                 })
                 setPlaylistLenght(playlistRuntime(runtime))
-            }).catch(e => { alert(e); console.log(e) })
+            }).catch(err => handleError(err.body.error.message))
         }
     }, [session, spotifyApi, playlistId])
 

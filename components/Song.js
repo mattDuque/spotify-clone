@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { millisConverter, dateFormatter } from '../lib/utils'
+import { millisConverter, dateFormatter, handleError } from '../lib/utils'
 import PauseOutlinedIcon from '@mui/icons-material/PauseOutlined'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { useRecoilState } from 'recoil';
@@ -19,13 +19,13 @@ function Song(props) {
         setCurrentTrackId(props.item.track.id)
         spotifyApi.play({
             uris: [props.item.track.uri]
-        }).catch(err => alert(err.body.error.message))
+        }).catch(err => handleError(err.body.error.message))
         setIsPlaying(true)
     }
 
     const pauseSong = () => {
         spotifyApi.pause()
-            .catch(err => alert(err.body.error.message))
+            .catch(err => handleError(err.body.error.message))
         setIsPlaying(false)
     }
 
